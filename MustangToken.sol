@@ -22,7 +22,6 @@
    #This is the contract for Mustang. Following in the footsteps of Doge and SafeMoon, but wilder.
    #New token has entered the wild west of the crypoworld. 
    #Mustang's contract is a fork of SafeMoon's, which is a fork of Bee's.
-   #V1 of Mustang's contract makes two more changes.
   
    #SAFEMOON comments (leaving for posterity):
         3% fee auto add to the liquidity pool to locked forever when selling
