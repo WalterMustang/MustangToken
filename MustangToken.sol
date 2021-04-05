@@ -1,12 +1,38 @@
 /**
-*
-*/
+																 _..._     
+															   .'   O `.    
+															  :       O :   
+															  :  O      :  
+                                                              `.       .'  
+																`-...-'  
+                   ,$$$,				 	             
+                 ,$$$` $			    €€€€€€€€€€€€€€€
+                ,$$`( '|			  €€€€€€€€€€€€€€€
+               ,$$@ /\_/			 €€€€€€   €€€€€€
+     ,$.-"""--$$$ "@@__			    €€€€€€€   €€€€
+    $$/             |__`\	       €€€€€€€€€€€€		
+   .$'\     |   \   /  //		   €€€€€€€€€€  - - - - - $$$ $$$ $$$ - - -
+   ,$' >   .'----\ |  [/		   €€€€€€€€€€€€
+      < <<`       ||			   €€€€€€€€€€€€€€
+       `\\\       ||			    €€€€€€€€€€€€€€€€
+         )\\      )\		  		  €€€€€€€€€€€€€€€€€
+ €€€€€€€€"""€€€€€€€""€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€
 
-/**
- *
-*/
 
-
+   #This is the contract for Mustang. Following in the footsteps of Doge and SafeMoon, but wilder.
+   #New token has entered the wild west of the crypoworld. 
+   #Mustang's contract is a fork of SafeMoon's, which is a fork of Bee's.
+   #V1 of Mustang's contract makes two more changes.
+  
+   #SAFEMOON comments (leaving for posterity):
+        3% fee auto add to the liquidity pool to locked forever when selling
+        2% fee auto distribute to all holders
+        I created a black hole so #Bee token will deflate itself in supply with every transaction
+        50% Supply is burned at start.
+   
+   #BEE comments (leaving for posterity):
+       #LIQ+#RFI+#SHIB+#DOGE = #BEE
+ */
 pragma solidity ^0.6.12;
 // SPDX-License-Identifier: Unlicensed
 interface IERC20 {
@@ -93,7 +119,7 @@ interface IERC20 {
  * Using this library instead of the unchecked operations eliminates an entire
  * class of bugs, so it's recommended to use it always.
  */
- 
+
 library SafeMath {
     /**
      * @dev Returns the addition of two unsigned integers, reverting on
@@ -463,7 +489,7 @@ contract Ownable is Context {
         _lockTime = now + time;
         emit OwnershipTransferred(_owner, address(0));
     }
-    
+
     //Unlocks the contract for owner when _lockTime is exceeds
     function unlock() public virtual {
         require(_previousOwner == msg.sender, "You don't have permission to unlock");
@@ -699,7 +725,7 @@ contract SafeMoon is Context, IERC20, Ownable {
 
     mapping (address => bool) private _isExcluded;
     address[] private _excluded;
-   
+
     uint256 private constant MAX = ~uint256(0);
     uint256 private _tTotal = 1000000000 * 10**6 * 10**9;
     uint256 private _rTotal = (MAX - (MAX % _tTotal));
@@ -708,22 +734,22 @@ contract SafeMoon is Context, IERC20, Ownable {
     string private _name = "SafeMoon";
     string private _symbol = "SAFEMOON";
     uint8 private _decimals = 9;
-    
+
     uint256 public _taxFee = 5;
     uint256 private _previousTaxFee = _taxFee;
-    
+
     uint256 public _liquidityFee = 5;
     uint256 private _previousLiquidityFee = _liquidityFee;
 
     IUniswapV2Router02 public immutable uniswapV2Router;
     address public immutable uniswapV2Pair;
-    
+
     bool inSwapAndLiquify;
     bool public swapAndLiquifyEnabled = true;
-    
+
     uint256 public _maxTxAmount = 5000000 * 10**6 * 10**9;
     uint256 private numTokensSellToAddToLiquidity = 500000 * 10**6 * 10**9;
-    
+
     event MinTokensBeforeSwapUpdated(uint256 minTokensBeforeSwap);
     event SwapAndLiquifyEnabledUpdated(bool enabled);
     event SwapAndLiquify(
@@ -731,16 +757,16 @@ contract SafeMoon is Context, IERC20, Ownable {
         uint256 ethReceived,
         uint256 tokensIntoLiqudity
     );
-    
+
     modifier lockTheSwap {
         inSwapAndLiquify = true;
         _;
         inSwapAndLiquify = false;
     }
-    
+
     constructor () public {
         _rOwned[_msgSender()] = _rTotal;
-        
+
         IUniswapV2Router02 _uniswapV2Router = IUniswapV2Router02(0x05fF2B0DB69458A0750badebc4f9e13aDd608C7F);
          // Create a uniswap pair for this new token
         uniswapV2Pair = IUniswapV2Factory(_uniswapV2Router.factory())
@@ -748,11 +774,11 @@ contract SafeMoon is Context, IERC20, Ownable {
 
         // set the rest of the contract variables
         uniswapV2Router = _uniswapV2Router;
-        
+
         //exclude owner and this contract from fee
         _isExcludedFromFee[owner()] = true;
         _isExcludedFromFee[address(this)] = true;
-        
+
         emit Transfer(address(0), _msgSender(), _tTotal);
     }
 
@@ -873,23 +899,23 @@ contract SafeMoon is Context, IERC20, Ownable {
         _reflectFee(rFee, tFee);
         emit Transfer(sender, recipient, tTransferAmount);
     }
-    
+
         function excludeFromFee(address account) public onlyOwner {
         _isExcludedFromFee[account] = true;
     }
-    
+
     function includeInFee(address account) public onlyOwner {
         _isExcludedFromFee[account] = false;
     }
-    
+
     function setTaxFeePercent(uint256 taxFee) external onlyOwner() {
         _taxFee = taxFee;
     }
-    
+
     function setLiquidityFeePercent(uint256 liquidityFee) external onlyOwner() {
         _liquidityFee = liquidityFee;
     }
-   
+
     function setMaxTxPercent(uint256 maxTxPercent) external onlyOwner() {
         _maxTxAmount = _tTotal.mul(maxTxPercent).div(
             10**2
@@ -900,7 +926,7 @@ contract SafeMoon is Context, IERC20, Ownable {
         swapAndLiquifyEnabled = _enabled;
         emit SwapAndLiquifyEnabledUpdated(_enabled);
     }
-    
+
      //to recieve ETH from uniswapV2Router when swaping
     receive() external payable {}
 
@@ -946,7 +972,7 @@ contract SafeMoon is Context, IERC20, Ownable {
         if (rSupply < _rTotal.div(_tTotal)) return (_rTotal, _tTotal);
         return (rSupply, tSupply);
     }
-    
+
     function _takeLiquidity(uint256 tLiquidity) private {
         uint256 currentRate =  _getRate();
         uint256 rLiquidity = tLiquidity.mul(currentRate);
@@ -954,7 +980,7 @@ contract SafeMoon is Context, IERC20, Ownable {
         if(_isExcluded[address(this)])
             _tOwned[address(this)] = _tOwned[address(this)].add(tLiquidity);
     }
-    
+
     function calculateTaxFee(uint256 _amount) private view returns (uint256) {
         return _amount.mul(_taxFee).div(
             10**2
@@ -966,22 +992,22 @@ contract SafeMoon is Context, IERC20, Ownable {
             10**2
         );
     }
-    
+
     function removeAllFee() private {
         if(_taxFee == 0 && _liquidityFee == 0) return;
-        
+
         _previousTaxFee = _taxFee;
         _previousLiquidityFee = _liquidityFee;
-        
+
         _taxFee = 0;
         _liquidityFee = 0;
     }
-    
+
     function restoreAllFee() private {
         _taxFee = _previousTaxFee;
         _liquidityFee = _previousLiquidityFee;
     }
-    
+
     function isExcludedFromFee(address account) public view returns(bool) {
         return _isExcludedFromFee[account];
     }
@@ -1010,12 +1036,12 @@ contract SafeMoon is Context, IERC20, Ownable {
         // also, don't get caught in a circular liquidity event.
         // also, don't swap & liquify if sender is uniswap pair.
         uint256 contractTokenBalance = balanceOf(address(this));
-        
+
         if(contractTokenBalance >= _maxTxAmount)
         {
             contractTokenBalance = _maxTxAmount;
         }
-        
+
         bool overMinTokenBalance = contractTokenBalance >= numTokensSellToAddToLiquidity;
         if (
             overMinTokenBalance &&
@@ -1027,15 +1053,15 @@ contract SafeMoon is Context, IERC20, Ownable {
             //add liquidity
             swapAndLiquify(contractTokenBalance);
         }
-        
+
         //indicates if fee should be deducted from transfer
         bool takeFee = true;
-        
+
         //if any account belongs to _isExcludedFromFee account then remove the fee
         if(_isExcludedFromFee[from] || _isExcludedFromFee[to]){
             takeFee = false;
         }
-        
+
         //transfer amount, it will take tax, burn, liquidity fee
         _tokenTransfer(from,to,amount,takeFee);
     }
@@ -1059,7 +1085,7 @@ contract SafeMoon is Context, IERC20, Ownable {
 
         // add liquidity to uniswap
         addLiquidity(otherHalf, newBalance);
-        
+
         emit SwapAndLiquify(half, newBalance, otherHalf);
     }
 
@@ -1100,7 +1126,7 @@ contract SafeMoon is Context, IERC20, Ownable {
     function _tokenTransfer(address sender, address recipient, uint256 amount,bool takeFee) private {
         if(!takeFee)
             removeAllFee();
-        
+
         if (_isExcluded[sender] && !_isExcluded[recipient]) {
             _transferFromExcluded(sender, recipient, amount);
         } else if (!_isExcluded[sender] && _isExcluded[recipient]) {
@@ -1112,7 +1138,7 @@ contract SafeMoon is Context, IERC20, Ownable {
         } else {
             _transferStandard(sender, recipient, amount);
         }
-        
+
         if(!takeFee)
             restoreAllFee();
     }
@@ -1147,6 +1173,6 @@ contract SafeMoon is Context, IERC20, Ownable {
     }
 
 
-    
+
 
 }
